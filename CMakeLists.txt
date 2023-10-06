@@ -33,6 +33,8 @@ add_executable(VulkanTutorial
 		src/Renderer/Vulkan/VulkanSwapchain.h
 		src/Renderer/Vulkan/VulkanImage.cpp
 		src/Renderer/Vulkan/VulkanImage.h)
+		src/Utilities/Filesystem.cpp
+		src/Utilities/Filesystem.h
 
 find_package(Vulkan REQUIRED)
 
