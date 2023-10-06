@@ -10,7 +10,14 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/glfw")
 
-add_executable(VulkanTutorial src/main.cpp)
+add_executable(VulkanTutorial src/main.cpp
+        src/HelloTriangleApplication.cpp
+        src/HelloTriangleApplication.h
+		src/VulkanBackend.cpp
+		src/VulkanBackend.h
+		src/Window.cpp
+		src/Window.h
+		src/Config.h)
 
 find_package(Vulkan REQUIRED)
 
