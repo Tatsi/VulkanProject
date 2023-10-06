@@ -7,6 +7,7 @@ HelloTriangleApplication::HelloTriangleApplication() :
     m_window(800, 600),
     m_renderer(m_window, m_cpuResourceManager)
 {
+    m_renderer.createRenderPipeline("shaders/shader.vert", "shaders/shader.frag");
 }
 
 void HelloTriangleApplication::run()

@@ -17,6 +17,8 @@ public:
     VulkanBackend(bool enableDebug, glm::uvec2 resolution, std::function<VkSurfaceKHR(VkInstance&)> surfaceCreationFunction, std::vector<const char*> windowVulkanExtensions);
     ~VulkanBackend();
 
+    void createGraphicsPipeline(const std::vector<uint32_t>& vertexShaderSpirV, const std::vector<uint32_t>& fragmentShaderSpirV);
+
 private:
     void createInstance(const std::vector<const char*>& neededInstanceExtensions);
 
@@ -30,6 +32,9 @@ private:
     VkDevice m_device{VK_NULL_HANDLE};
     VkQueue m_queueGraphicsCompute{VK_NULL_HANDLE};
     VkQueue m_queuePresent{VK_NULL_HANDLE};
+    VkRenderPass m_renderPass{VK_NULL_HANDLE};
+    VkPipelineLayout m_pipelineLayout{VK_NULL_HANDLE};
+    VkPipeline m_pipeline;
     VkDebugUtilsMessengerEXT m_debugMessenger{VK_NULL_HANDLE};
 };
 } // namespace Vulkan

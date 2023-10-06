@@ -2,9 +2,10 @@
 
 #include "../Utilities/Filesystem.h"
 
-#include <glslang/SPIRV/Logger.h>
 #include <glslang/SPIRV/GlslangToSpv.h>
+#include <glslang/SPIRV/Logger.h>
 
+#include <iostream>
 #include <stdexcept>
 
 namespace
@@ -138,12 +139,20 @@ public:
 
 }
 
-namespace ShaderCompiler
+ShaderCompiler::ShaderCompiler()
 {
+    glslang::InitializeProcess();
+}
 
-Shader compileShader(std::string name, std::string path, EShLanguage stage)
+ShaderCompiler::~ShaderCompiler()
+{
+    glslang::FinalizeProcess();
+}
+
+Shader ShaderCompiler::compileShader(std::string name, std::string path, EShLanguage stage)
 {
     std::vector<char> data = FileSystem::loadTextFile(path);
+    data.push_back('\0');
     const char* dataPointer = data.data();
 
     glslang::TShader shader(stage);
@@ -151,6 +160,7 @@ Shader compileShader(std::string name, std::string path, EShLanguage stage)
 
     std::string preamble = "#extension GL_GOOGLE_include_directive : require\n";
     shader.setPreamble(preamble.c_str());
+
 
     const int clientInputSemanticsVersion = 100;
     shader.setEnvInput(glslang::EShSourceGlsl, stage, glslang::EShClientVulkan, clientInputSemanticsVersion);
@@ -163,8 +173,12 @@ Shader compileShader(std::string name, std::string path, EShLanguage stage)
 
     Includer includer{};
     std::string processedShaderCode;
+
     if (!shader.preprocess(&resources, glslVersion, ENoProfile, false, false, messages, &processedShaderCode, includer))
     {
+        std::cout << "Failed to preprocess shader code:" << std::endl;
+        std::cout << shader.getInfoLog() << std::endl;
+        std::cout << shader.getInfoDebugLog() << std::endl;
         throw std::runtime_error("Failed to preprocess shader code!");
     }
 
@@ -173,6 +187,9 @@ Shader compileShader(std::string name, std::string path, EShLanguage stage)
 
     if (!shader.parse(&resources, glslVersion, false, messages))
     {
+        std::cout << "Failed to parse shader code:" << std::endl;
+        std::cout << shader.getInfoLog() << std::endl;
+        std::cout << shader.getInfoDebugLog() << std::endl;
         throw std::runtime_error("Failed to parse shader code!");
     }
 
@@ -181,6 +198,9 @@ Shader compileShader(std::string name, std::string path, EShLanguage stage)
 
     if (!shaderProgram.link(messages))
     {
+        std::cout << "Failed to parse shader code:" << std::endl;
+        std::cout << shader.getInfoLog() << std::endl;
+        std::cout << shader.getInfoDebugLog() << std::endl;
         throw std::runtime_error("Failed to link shader code!");
     }
 
@@ -190,6 +210,4 @@ Shader compileShader(std::string name, std::string path, EShLanguage stage)
     glslang::GlslangToSpv(*shaderProgram.getIntermediate(stage), output.spirvCode, &logger, &spvOptions);
 
     return output;
-}
-
 }

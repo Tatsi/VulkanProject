@@ -11,8 +11,6 @@
 #include <string>
 #include <vector>
 
-namespace ShaderCompiler
-{
 
 struct Shader
 {
@@ -21,8 +19,15 @@ struct Shader
     std::vector<uint32_t> spirvCode;
 };
 
-Shader compileShader(std::string name, std::string path, EShLanguage stage);
+class ShaderCompiler
+{
+public:
+    ShaderCompiler();
+    ~ShaderCompiler();
+    Shader compileShader(std::string name, std::string path, EShLanguage stage);
 
-}
+private:
+};
+
 
 #endif // VULKANPROJECT_SHADERCOMPILER_H

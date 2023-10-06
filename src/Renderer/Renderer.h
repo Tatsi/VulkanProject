@@ -13,6 +13,8 @@ class Renderer
 {
 public:
     Renderer(Window& window, const CPUResourceManager& cpuResourceManager);
+
+    void createRenderPipeline(std::string_view vertexShaderPath, std::string_view fragmentShaderPath);
 private:
     Vulkan::VulkanBackend m_graphicsBackend;
 };

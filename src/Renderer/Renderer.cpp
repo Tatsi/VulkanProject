@@ -8,7 +8,6 @@ constexpr bool debug = true;
 
 #include "ShaderCompiler.h"
 
-#include <vulkan/vulkan.h>
 
 Renderer::Renderer(Window& window, const CPUResourceManager& cpuResourceManager) :
     m_graphicsBackend(debug,
@@ -16,9 +15,14 @@ Renderer::Renderer(Window& window, const CPUResourceManager& cpuResourceManager)
                       std::bind(&Window::createVulkanSurface, &window, std::placeholders::_1),
                       window.getRequiredVulkanExtensions(debug))
 {
-    ShaderCompiler::Shader vertexShader = ShaderCompiler::compileShader("vertexShader", "shaders/shader.vert", EShLanguage::EShLangVertex);
-    ShaderCompiler::Shader fragmentShader = ShaderCompiler::compileShader("fragmentShader", "shaders/shader.frag", EShLanguage::EShLangFragment);
-
-    //m_graphicsBackend.createGraphicsPipeline(Shader vertexShader, Shader fragmentShader);
-
 };
+
+void Renderer::createRenderPipeline(std::string_view vertexShaderPath, std::string_view fragmentShaderPath)
+{
+    ShaderCompiler shaderCompiler;
+
+    const Shader vertexShader = shaderCompiler.compileShader("vertexShader", "shaders/shader.vert", EShLanguage::EShLangVertex);
+    const Shader fragmentShader = shaderCompiler.compileShader("fragmentShader", "shaders/shader.frag", EShLanguage::EShLangFragment);
+
+    m_graphicsBackend.createGraphicsPipeline(vertexShader.spirvCode, fragmentShader.spirvCode);
+}

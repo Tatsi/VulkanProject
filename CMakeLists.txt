@@ -46,6 +46,8 @@ add_executable(VulkanTutorial
 		src/Renderer/Vulkan/VulkanPipeline.h
 		src/Utilities/Filesystem.cpp
 		src/Utilities/Filesystem.h
+		src/Renderer/Vulkan/VulkanShader.cpp
+		src/Renderer/Vulkan/VulkanShader.h
 )
 
 find_package(Vulkan REQUIRED)

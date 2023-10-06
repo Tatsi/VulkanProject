@@ -4,6 +4,7 @@
 #include "VulkanDevice.h"
 #include "VulkanImage.h"
 #include "VulkanPipeline.h"
+#include "VulkanShader.h"
 
 #include <functional>
 #include <iostream>
@@ -35,12 +36,14 @@ VulkanBackend::VulkanBackend(bool enableDebug, glm::uvec2 resolution, std::funct
     m_swapchainInfo = createSwapChain(m_physicalDevice, m_device, m_surface, resolution, queueFamilyIndices);
 
     m_swapchainImageViews = createImageViewsForImages(m_device, m_swapchainInfo.images, m_swapchainInfo.format.format);
-
-    createGraphicsPipeline();
 }
 
 VulkanBackend::~VulkanBackend()
 {
+    vkDestroyPipeline(m_device, m_pipeline, nullptr);
+    vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
+    vkDestroyRenderPass(m_device, m_renderPass, nullptr);
+
     for (auto swapchainImageView : m_swapchainImageViews)
     {
         vkDestroyImageView(m_device, swapchainImageView, nullptr);
@@ -129,6 +132,29 @@ void VulkanBackend::createInstance(const std::vector<const char*>& neededInstanc
     {
         throw std::runtime_error("Failed to create a Vulkan physical device!");
     }
+}
+
+void VulkanBackend::createGraphicsPipeline(const std::vector<uint32_t>& vertexShaderSpirV, const std::vector<uint32_t>& fragmentShaderSpirV)
+{
+    VkShaderModule vertexShaderModule = createShaderModule(m_device, vertexShaderSpirV);
+    VkShaderModule fragmentShaderModule = createShaderModule(m_device, fragmentShaderSpirV);
+
+    if (m_renderPass)
+    {
+        throw std::runtime_error("Currently only one render pass is supported!");
+    }
+    m_renderPass = createRenderPass(m_device, m_swapchainInfo.format.format);
+
+    if (m_pipelineLayout)
+    {
+        throw std::runtime_error("Currently only one pipeline is supported!");
+    }
+    m_pipelineLayout = createPipelineLayout(m_device);
+
+    m_pipeline = createVulkanGraphicsPipeline(m_device, m_pipelineLayout, m_renderPass, vertexShaderModule, fragmentShaderModule, m_swapchainInfo.extent);
+
+    destroyShaderModule(m_device, vertexShaderModule);
+    destroyShaderModule(m_device, fragmentShaderModule);
 }
 
 } // namespace Vulkan
