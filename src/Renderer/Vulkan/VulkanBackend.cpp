@@ -3,12 +3,12 @@
 #include "VulkanDebug.h"
 #include "VulkanDevice.h"
 #include "VulkanImage.h"
+#include "VulkanPipeline.h"
 
 #include <functional>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
-
 
 namespace Vulkan
 {
@@ -35,6 +35,8 @@ VulkanBackend::VulkanBackend(bool enableDebug, glm::uvec2 resolution, std::funct
     m_swapchainInfo = createSwapChain(m_physicalDevice, m_device, m_surface, resolution, queueFamilyIndices);
 
     m_swapchainImageViews = createImageViewsForImages(m_device, m_swapchainInfo.images, m_swapchainInfo.format.format);
+
+    createGraphicsPipeline();
 }
 
 VulkanBackend::~VulkanBackend()

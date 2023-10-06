@@ -1,23 +1,28 @@
 cmake_minimum_required (VERSION 3.15)
-project(VulkanProject)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+list(APPEND CMAKE_MODULE_PATH
+	"${CMAKE_CURRENT_LIST_DIR}/CMake"
+)
 
 include(${CMAKE_CURRENT_LIST_DIR}/CMake/vcpkg.cmake)
+
+project(VulkanProject)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/glfw")
 
+set(TARGET_NAME VulkanTutorial)
 add_executable(VulkanTutorial
         src/main.cpp
         src/HelloTriangleApplication.cpp
         src/HelloTriangleApplication.h
-		src/Renderer/Vulkan/VulkanBackend.cpp
-		src/Renderer/Vulkan/VulkanBackend.h
 		src/Window.cpp
 		src/Window.h
 		src/Config.h
@@ -25,6 +30,10 @@ add_executable(VulkanTutorial
 		src/CPUResourceManager.h
 		src/Renderer/Renderer.cpp
 		src/Renderer/Renderer.h
+		src/Renderer/ShaderCompiler.cpp
+		src/Renderer/ShaderCompiler.h
+		src/Renderer/Vulkan/VulkanBackend.cpp
+		src/Renderer/Vulkan/VulkanBackend.h
 		src/Renderer/Vulkan/VulkanDebug.cpp
 		src/Renderer/Vulkan/VulkanDebug.h
 		src/Renderer/Vulkan/VulkanDevice.cpp
@@ -32,9 +41,12 @@ add_executable(VulkanTutorial
 		src/Renderer/Vulkan/VulkanSwapchain.cpp
 		src/Renderer/Vulkan/VulkanSwapchain.h
 		src/Renderer/Vulkan/VulkanImage.cpp
-		src/Renderer/Vulkan/VulkanImage.h)
+		src/Renderer/Vulkan/VulkanImage.h
+		src/Renderer/Vulkan/VulkanPipeline.cpp
+		src/Renderer/Vulkan/VulkanPipeline.h
 		src/Utilities/Filesystem.cpp
 		src/Utilities/Filesystem.h
+)
 
 find_package(Vulkan REQUIRED)
 
