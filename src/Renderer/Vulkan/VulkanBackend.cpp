@@ -5,8 +5,8 @@
 #include "VulkanBackend.h"
 
 #include "VulkanDebug.h"
+#include "VulkanDevice.h"
 
-#include <cstring>
 #include <functional>
 #include <iostream>
 #include <stdexcept>
@@ -25,6 +25,12 @@ VulkanBackend::VulkanBackend(bool enableDebug, std::vector<const char*> windowVu
     {
         setupDebugMessenger(m_instance, m_debugMessenger);
     }
+
+    m_physicalDevice = selectPhysicalDevice(m_instance);
+    const uint32_t suitableQueueFamilyIndex = findSuitableQueueFamily(m_physicalDevice).value();
+    m_device = createLogicalDevice(m_physicalDevice, suitableQueueFamilyIndex, getValidationLayers());
+
+    vkGetDeviceQueue(m_device, suitableQueueFamilyIndex, 0, &m_queue);
 }
 
 VulkanBackend::~VulkanBackend()
@@ -37,6 +43,7 @@ VulkanBackend::~VulkanBackend()
             func(m_instance, m_debugMessenger, nullptr);
         }
     }
+    vkDestroyDevice(m_device, nullptr);
     vkDestroyInstance(m_instance, nullptr);
 }
 
@@ -56,7 +63,7 @@ void VulkanBackend::createInstance(const std::vector<const char*>& neededInstanc
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.pEngineName = "Jongine";
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.apiVersion = VK_API_VERSION_1_0;
+    appInfo.apiVersion = VK_API_VERSION_1_2;
 
     // Get supported instance level extensions
     uint32_t availableExtensionCount = 0;
@@ -104,7 +111,10 @@ void VulkanBackend::createInstance(const std::vector<const char*>& neededInstanc
         createInfo.pNext = nullptr;
     }
 
-    VkResult result = vkCreateInstance(&createInfo, nullptr, &m_instance);
+    if (vkCreateInstance(&createInfo, nullptr, &m_instance))
+    {
+        throw std::runtime_error("Failed to create a Vulkan physical device!");
+    }
 }
 
 }

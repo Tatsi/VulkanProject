@@ -23,7 +23,9 @@ add_executable(VulkanTutorial src/main.cpp
 		src/Renderer/Renderer.cpp
 		src/Renderer/Renderer.h
 		src/Renderer/Vulkan/VulkanDebug.cpp
-		src/Renderer/Vulkan/VulkanDebug.h)
+		src/Renderer/Vulkan/VulkanDebug.h
+		src/Renderer/Vulkan/VulkanDevice.cpp
+		src/Renderer/Vulkan/VulkanDevice.h)
 
 find_package(Vulkan REQUIRED)
 

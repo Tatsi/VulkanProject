@@ -15,8 +15,11 @@ private:
     void createInstance(const std::vector<const char*>& neededInstanceExtensions);
 
     bool m_enableDebug{false};
-    VkInstance m_instance;
-    VkDebugUtilsMessengerEXT m_debugMessenger = nullptr;
+    VkInstance m_instance{VK_NULL_HANDLE};
+    VkPhysicalDevice m_physicalDevice{VK_NULL_HANDLE};
+    VkDevice m_device{VK_NULL_HANDLE};
+    VkQueue m_queue;
+    VkDebugUtilsMessengerEXT m_debugMessenger{VK_NULL_HANDLE};
 };
 } // namespace Vulkan
 
