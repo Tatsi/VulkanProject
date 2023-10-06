@@ -1,0 +1,9 @@
+{
+    "name": "VulkanProject",
+    "version": "1.0.0",
+    "description": "Vulkan project.",
+    "builtin-baseline": "d5cfd0d24a69bc341b87ce4e85419fe237139d1d",
+    "dependencies": [
+      "glm"
+  ]
+}
