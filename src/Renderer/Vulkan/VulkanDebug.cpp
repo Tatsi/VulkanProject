@@ -1,21 +1,11 @@
-//
-// Created by janttala on 6.10.2023.
-//
-
 #include "VulkanDebug.h"
 
 #include <cstring>
 #include <iostream>
 #include <stdexcept>
 
-
-namespace Vulkan
+namespace
 {
-
-const std::vector<const char*> getValidationLayers()
-{
-    return {"VK_LAYER_KHRONOS_validation"};
-}
 
 VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -32,6 +22,16 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
         std::cerr << "[Vulkan Warning]: " << pCallbackData->pMessage << std::endl;
     }
     return VK_FALSE;
+}
+
+}
+
+namespace Vulkan
+{
+
+const std::vector<const char*> getValidationLayers()
+{
+    return {"VK_LAYER_KHRONOS_validation"};
 }
 
 bool checkValidationLayerSupport(const std::vector<const char*>& validationLayers)

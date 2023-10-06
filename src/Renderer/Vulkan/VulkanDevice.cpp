@@ -1,7 +1,39 @@
 #include "VulkanDevice.h"
 
+#include "VulkanSwapchain.h"
+
 #include <set>
 
+namespace
+{
+
+const std::vector<const char*> deviceExtensions = {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
+
+VkPhysicalDeviceFeatures getNeededPhysicalDeviceFeatures()
+{
+    VkPhysicalDeviceFeatures neededFeatures{};
+    neededFeatures.textureCompressionBC = true;
+    neededFeatures.multiDrawIndirect = true;
+    return neededFeatures;
+}
+
+bool checkDeviceExtensionSupport(VkPhysicalDevice device) {
+    uint32_t extensionCount;
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+    std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+    std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+
+    for (const auto& extension : availableExtensions) {
+        requiredExtensions.erase(extension.extensionName);
+    }
+
+    return requiredExtensions.empty();
+}
 
 bool isPhysicalDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
@@ -11,13 +43,24 @@ bool isPhysicalDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
     VkPhysicalDeviceFeatures deviceFeatures;
     vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
-    bool deviceIsSuitable = VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
-
-    const QueueFamilyIndices familyIndices = findSuitableQueueFamilies(device, surface);
-    deviceIsSuitable |= familyIndices.graphicsAndComputeFamily.has_value() && familyIndices.presentFamily.has_value();
+    const Vulkan::QueueFamilyIndices familyIndices = Vulkan::findSuitableQueueFamilies(device, surface);
 
     VkPhysicalDeviceFeatures neededFeatures = getNeededPhysicalDeviceFeatures();
 
+    const bool neededExtensionsAreSupported = checkDeviceExtensionSupport(device);
+
+    bool swapChainAdequate = false;
+    if (neededExtensionsAreSupported) {
+        Vulkan::SwapChainSupportInfo swapChainSupport = Vulkan::querySwapChainSupport(device, surface);
+        swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+    }
+
+    bool deviceIsSuitable = deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
+    deviceIsSuitable &= familyIndices.graphicsAndComputeFamily.has_value() && familyIndices.presentFamily.has_value();
+    deviceIsSuitable &= neededExtensionsAreSupported;
+    deviceIsSuitable &= swapChainAdequate;
+
+    // These need to match getNeededPhysicalDeviceFeatures()
     if (neededFeatures.textureCompressionBC && !deviceFeatures.textureCompressionBC)
     {
         deviceIsSuitable = false;
@@ -30,6 +73,10 @@ bool isPhysicalDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
     return deviceIsSuitable;
 };
 
+}
+
+namespace Vulkan
+{
 VkPhysicalDevice selectPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)
 {
     uint32_t deviceCount = 0;
@@ -117,7 +164,8 @@ VkDevice createLogicalDevice(VkPhysicalDevice& physicalDevice, const QueueFamily
     createInfo.pQueueCreateInfos = queueCreateInfos.data();
     createInfo.queueCreateInfoCount = queueCreateInfos.size();
     createInfo.pEnabledFeatures = &deviceFeatures;
-    createInfo.enabledExtensionCount = 0;
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
+    createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
     // In Vulkan it's no longer needed to set validation layers also for logical device,
     // but done here to support older Vulkan implementations
@@ -133,10 +181,6 @@ VkDevice createLogicalDevice(VkPhysicalDevice& physicalDevice, const QueueFamily
     return device;
 }
 
-VkPhysicalDeviceFeatures getNeededPhysicalDeviceFeatures()
-{
-    VkPhysicalDeviceFeatures neededFeatures{};
-    neededFeatures.textureCompressionBC = true;
-    neededFeatures.multiDrawIndirect = true;
-    return neededFeatures;
+
 }
+

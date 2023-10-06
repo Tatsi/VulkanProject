@@ -9,6 +9,9 @@ constexpr bool debug = true;
 #include <vulkan/vulkan.h>
 
 Renderer::Renderer(Window& window, const CPUResourceManager& cpuResourceManager) :
-    m_graphicsBackend(debug, std::bind(&Window::createVulkanSurface, &window, std::placeholders::_1), window.getRequiredVulkanExtensions(debug))
+    m_graphicsBackend(debug,
+                      window.getResolution(),
+                      std::bind(&Window::createVulkanSurface, &window, std::placeholders::_1),
+                      window.getRequiredVulkanExtensions(debug))
 {
 };

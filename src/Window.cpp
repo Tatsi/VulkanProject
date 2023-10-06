@@ -56,3 +56,10 @@ VkSurfaceKHR Window::createVulkanSurface(VkInstance& instance)
     }
     return surface;
 }
+
+glm::uvec2 Window::getResolution() const
+{
+    int width, height;
+    glfwGetFramebufferSize(m_window, &width, &height);
+    return {static_cast<uint32_t>(width),static_cast<uint32_t>(height)};
+}

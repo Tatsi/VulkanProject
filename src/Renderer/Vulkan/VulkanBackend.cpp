@@ -1,7 +1,3 @@
-//
-// Created by janttala on 6.10.2023.
-//
-
 #include "VulkanBackend.h"
 
 #include "VulkanDebug.h"
@@ -16,7 +12,7 @@
 namespace Vulkan
 {
 
-VulkanBackend::VulkanBackend(bool enableDebug, std::function<VkSurfaceKHR(VkInstance&)> surfaceCreationFunction, std::vector<const char*> windowVulkanExtensions) :
+VulkanBackend::VulkanBackend(bool enableDebug, glm::uvec2 resolution, std::function<VkSurfaceKHR(VkInstance&)> surfaceCreationFunction, std::vector<const char*> windowVulkanExtensions) :
     m_enableDebug(enableDebug)
 {
     createInstance(windowVulkanExtensions);
@@ -33,10 +29,18 @@ VulkanBackend::VulkanBackend(bool enableDebug, std::function<VkSurfaceKHR(VkInst
 
     vkGetDeviceQueue(m_device, queueFamilies.graphicsAndComputeFamily.value(), 0, &m_queueGraphicsCompute);
     vkGetDeviceQueue(m_device, queueFamilies.presentFamily.value(), 0, &m_queuePresent);
+
+    const std::array<uint32_t, 2> queueFamilyIndices = {queueFamilies.graphicsAndComputeFamily.value(), queueFamilies.presentFamily.value()};
+
+    m_swapchainInfo = createSwapChain(m_physicalDevice, m_device, m_surface, resolution, queueFamilyIndices);
 }
 
 VulkanBackend::~VulkanBackend()
 {
+    vkDestroySwapchainKHR(m_device, m_swapchainInfo.swapchain, nullptr);
+    vkDestroyDevice(m_device, nullptr);
+    vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
+
     if (m_debugMessenger)
     {
         auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_instance, "vkDestroyDebugUtilsMessengerEXT");
@@ -45,8 +49,6 @@ VulkanBackend::~VulkanBackend()
             func(m_instance, m_debugMessenger, nullptr);
         }
     }
-    vkDestroyDevice(m_device, nullptr);
-    vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
     vkDestroyInstance(m_instance, nullptr);
 }
 
@@ -119,7 +121,5 @@ void VulkanBackend::createInstance(const std::vector<const char*>& neededInstanc
         throw std::runtime_error("Failed to create a Vulkan physical device!");
     }
 }
-
-
 
 }

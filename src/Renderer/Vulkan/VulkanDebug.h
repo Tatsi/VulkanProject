@@ -20,13 +20,6 @@ void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& create
 
 void setupDebugMessenger(VkInstance& m_instance, VkDebugUtilsMessengerEXT& m_debugMessenger);
 
-static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-    VkDebugUtilsMessageTypeFlagsEXT messageType,
-    const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-    void* pUserData);
-
 }
-
 
 #endif // VULKANPROJECT_VULKANDEBUG_H

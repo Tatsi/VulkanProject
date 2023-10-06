@@ -1,20 +1,28 @@
 #ifndef VULKANPROJECT_VULKANBACKEND_H
 #define VULKANPROJECT_VULKANBACKEND_H
 
-#include "vulkan/vulkan.hpp"
+#include "VulkanSwapchain.h"
+
+#include <glm/glm.hpp>
+#include <vulkan/vulkan.h>
+
+#include <functional>
+#include <vector>
 
 namespace Vulkan
 {
 class VulkanBackend
 {
 public:
-    VulkanBackend(bool enableDebug, std::function<VkSurfaceKHR(VkInstance&)> surfaceCreationFunction, std::vector<const char*> windowVulkanExtensions);
+    VulkanBackend(bool enableDebug, glm::uvec2 resolution, std::function<VkSurfaceKHR(VkInstance&)> surfaceCreationFunction, std::vector<const char*> windowVulkanExtensions);
     ~VulkanBackend();
 
 private:
     void createInstance(const std::vector<const char*>& neededInstanceExtensions);
 
     bool m_enableDebug{false};
+
+    SwapChainInfo m_swapchainInfo{};
     VkInstance m_instance{VK_NULL_HANDLE};
     VkSurfaceKHR m_surface{VK_NULL_HANDLE};
     VkPhysicalDevice m_physicalDevice{VK_NULL_HANDLE};
