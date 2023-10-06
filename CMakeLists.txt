@@ -43,7 +43,20 @@ target_include_directories(VulkanTutorial
         "${Vulkan_INCLUDE_DIRS}"
 )
 
+find_package(glm CONFIG REQUIRED)
+find_package(glfw3 CONFIG REQUIRED)
 
+find_package(Threads REQUIRED)
+find_package(glslang REQUIRED)
 
+target_link_libraries(VulkanTutorial PRIVATE
+	Vulkan::Vulkan
+	glslang::glslang
+	glslang::SPIRV
+	glfw
+	glm::glm
+)
 
-target_link_libraries(VulkanTutorial PUBLIC glfw Vulkan::Vulkan)
+add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+				   ${CMAKE_CURRENT_LIST_DIR}/shaders $<TARGET_FILE_DIR:${TARGET_NAME}>/shaders)
