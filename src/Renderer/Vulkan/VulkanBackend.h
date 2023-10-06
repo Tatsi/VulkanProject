@@ -23,6 +23,7 @@ private:
     bool m_enableDebug{false};
 
     SwapChainInfo m_swapchainInfo{};
+    std::vector<VkImageView> m_swapchainImageViews;
     VkInstance m_instance{VK_NULL_HANDLE};
     VkSurfaceKHR m_surface{VK_NULL_HANDLE};
     VkPhysicalDevice m_physicalDevice{VK_NULL_HANDLE};

@@ -8,8 +8,7 @@ namespace
 {
 
 const std::vector<const char*> deviceExtensions = {
-    VK_KHR_SWAPCHAIN_EXTENSION_NAME
-};
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
 VkPhysicalDeviceFeatures getNeededPhysicalDeviceFeatures()
 {
@@ -19,7 +18,8 @@ VkPhysicalDeviceFeatures getNeededPhysicalDeviceFeatures()
     return neededFeatures;
 }
 
-bool checkDeviceExtensionSupport(VkPhysicalDevice device) {
+bool checkDeviceExtensionSupport(VkPhysicalDevice device)
+{
     uint32_t extensionCount;
     vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 
@@ -28,7 +28,8 @@ bool checkDeviceExtensionSupport(VkPhysicalDevice device) {
 
     std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
 
-    for (const auto& extension : availableExtensions) {
+    for (const auto& extension : availableExtensions)
+    {
         requiredExtensions.erase(extension.extensionName);
     }
 
@@ -50,7 +51,8 @@ bool isPhysicalDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
     const bool neededExtensionsAreSupported = checkDeviceExtensionSupport(device);
 
     bool swapChainAdequate = false;
-    if (neededExtensionsAreSupported) {
+    if (neededExtensionsAreSupported)
+    {
         Vulkan::SwapChainSupportInfo swapChainSupport = Vulkan::querySwapChainSupport(device, surface);
         swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
     }
@@ -73,7 +75,7 @@ bool isPhysicalDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
     return deviceIsSuitable;
 };
 
-}
+} // namespace
 
 namespace Vulkan
 {
@@ -90,7 +92,8 @@ VkPhysicalDevice selectPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)
     std::vector<VkPhysicalDevice> devices(deviceCount);
     vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
-    for (const auto& device : devices) {
+    for (const auto& device : devices)
+    {
         if (isPhysicalDeviceSuitable(device, surface))
         {
             return device;
@@ -115,7 +118,8 @@ QueueFamilyIndices findSuitableQueueFamilies(VkPhysicalDevice device, VkSurfaceK
 
         const bool supportGraphicsAndCompute = queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT && queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT;
 
-        if (supportGraphicsAndCompute) {
+        if (supportGraphicsAndCompute)
+        {
             indices.graphicsAndComputeFamily = i;
         }
 
@@ -148,7 +152,8 @@ VkDevice createLogicalDevice(VkPhysicalDevice& physicalDevice, const QueueFamily
 
     std::set<uint32_t> uniqueQueueFamilies = {suitableQueueFamilyIndices.graphicsAndComputeFamily.value(), suitableQueueFamilyIndices.presentFamily.value()};
 
-    for (uint32_t queueFamily : uniqueQueueFamilies) {
+    for (uint32_t queueFamily : uniqueQueueFamilies)
+    {
         VkDeviceQueueCreateInfo queueCreateInfo{};
         queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         queueCreateInfo.queueFamilyIndex = queueFamily;
@@ -182,5 +187,4 @@ VkDevice createLogicalDevice(VkPhysicalDevice& physicalDevice, const QueueFamily
 }
 
 
-}
-
+} // namespace Vulkan

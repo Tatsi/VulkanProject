@@ -2,6 +2,7 @@
 
 #include "VulkanDebug.h"
 #include "VulkanDevice.h"
+#include "VulkanImage.h"
 
 #include <functional>
 #include <iostream>
@@ -31,12 +32,18 @@ VulkanBackend::VulkanBackend(bool enableDebug, glm::uvec2 resolution, std::funct
     vkGetDeviceQueue(m_device, queueFamilies.presentFamily.value(), 0, &m_queuePresent);
 
     const std::array<uint32_t, 2> queueFamilyIndices = {queueFamilies.graphicsAndComputeFamily.value(), queueFamilies.presentFamily.value()};
-
     m_swapchainInfo = createSwapChain(m_physicalDevice, m_device, m_surface, resolution, queueFamilyIndices);
+
+    m_swapchainImageViews = createImageViewsForImages(m_device, m_swapchainInfo.images, m_swapchainInfo.format.format);
 }
 
 VulkanBackend::~VulkanBackend()
 {
+    for (auto swapchainImageView : m_swapchainImageViews)
+    {
+        vkDestroyImageView(m_device, swapchainImageView, nullptr);
+    }
+
     vkDestroySwapchainKHR(m_device, m_swapchainInfo.swapchain, nullptr);
     vkDestroyDevice(m_device, nullptr);
     vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
@@ -122,4 +129,4 @@ void VulkanBackend::createInstance(const std::vector<const char*>& neededInstanc
     }
 }
 
-}
+} // namespace Vulkan

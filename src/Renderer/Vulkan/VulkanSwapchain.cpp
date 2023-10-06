@@ -8,8 +8,10 @@ namespace
 
 VkSurfaceFormatKHR chooseSwapChainSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
 {
-    for (const auto& availableFormat : availableFormats) {
-        if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+    for (const auto& availableFormat : availableFormats)
+    {
+        if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+        {
             return availableFormat;
         }
     }
@@ -18,8 +20,10 @@ VkSurfaceFormatKHR chooseSwapChainSurfaceFormat(const std::vector<VkSurfaceForma
 
 VkPresentModeKHR chooseSwapChainPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
 {
-    for (const auto& availablePresentMode : availablePresentModes) {
-        if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+    for (const auto& availablePresentMode : availablePresentModes)
+    {
+        if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
+        {
             return availablePresentMode;
         }
     }
@@ -41,7 +45,7 @@ VkExtent2D chooseSwapChainExtent(const VkSurfaceCapabilitiesKHR& capabilities, g
     }
 }
 
-}
+} // namespace
 
 namespace Vulkan
 {
@@ -74,10 +78,10 @@ SwapChainSupportInfo querySwapChainSupport(VkPhysicalDevice physicalDevice, VkSu
 }
 
 SwapChainInfo createSwapChain(VkPhysicalDevice physicalDevice,
-                               VkDevice logicalDevice,
-                               VkSurfaceKHR surface,
-                               glm::uvec2 windowResolution,
-                               std::array<uint32_t, 2> queueFamilyIndices)
+                              VkDevice logicalDevice,
+                              VkSurfaceKHR surface,
+                              glm::uvec2 windowResolution,
+                              std::array<uint32_t, 2> queueFamilyIndices)
 {
     SwapChainInfo swapchain{};
     SwapChainSupportInfo swapChainSupport = querySwapChainSupport(physicalDevice, surface);
@@ -144,4 +148,4 @@ std::vector<VkImage> getSwapchainImages(VkDevice logicalDevice, VkSwapchainKHR s
     return swapChainImages;
 }
 
-}
+} // namespace Vulkan

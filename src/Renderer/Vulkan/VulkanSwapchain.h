@@ -27,11 +27,11 @@ struct SwapChainSupportInfo
 
 SwapChainSupportInfo querySwapChainSupport(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
 SwapChainInfo createSwapChain(VkPhysicalDevice physicalDevice,
-                               VkDevice logicalDevice,
-                               VkSurfaceKHR surface,
-                               glm::uvec2 windowResolution,
-                               std::array<uint32_t, 2> queueFamilyIndices);
+                              VkDevice logicalDevice,
+                              VkSurfaceKHR surface,
+                              glm::uvec2 windowResolution,
+                              std::array<uint32_t, 2> queueFamilyIndices);
 
-}
+} // namespace Vulkan
 
 #endif // VULKANPROJECT_VULKANSWAPCHAIN_H
