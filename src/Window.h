@@ -14,7 +14,7 @@ public:
 
     bool update();
 
-    std::vector<const char*> getRequiredVulkanExtensions() const;
+    std::vector<const char*> getRequiredVulkanExtensions(bool enableVulkanValidationLayers) const;
 
 private:
     GLFWwindow* m_window;

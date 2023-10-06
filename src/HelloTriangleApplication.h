@@ -1,9 +1,9 @@
 #ifndef VULKANPROJECT_HELLOTRIANGLEAPPLICATION_H
 #define VULKANPROJECT_HELLOTRIANGLEAPPLICATION_H
 
-#include "Window.h"
 #include "CPUResourceManager.h"
-#include "Renderer.h"
+#include "Renderer/Renderer.h"
+#include "Window.h"
 
 #include <cstdlib>
 #include <cstring>

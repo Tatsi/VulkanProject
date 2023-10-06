@@ -3,7 +3,6 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include "Config.h"
 
 Window::Window(size_t width, size_t height)
 {
@@ -29,7 +28,7 @@ bool Window::update()
     return true;
 }
 
-std::vector<const char*> Window::getRequiredVulkanExtensions() const
+std::vector<const char*> Window::getRequiredVulkanExtensions(bool enableVulkanValidationLayers) const
 {
     uint32_t glfwExtensionCount = 0;
     const char** glfwExtensions;
@@ -37,7 +36,7 @@ std::vector<const char*> Window::getRequiredVulkanExtensions() const
 
     std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
-    if (enableValidationLayers)
+    if (enableVulkanValidationLayers)
     {
         extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }

@@ -13,15 +13,17 @@ add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/glfw")
 add_executable(VulkanTutorial src/main.cpp
         src/HelloTriangleApplication.cpp
         src/HelloTriangleApplication.h
-		src/VulkanBackend.cpp
-		src/VulkanBackend.h
+		src/Renderer/Vulkan/VulkanBackend.cpp
+		src/Renderer/Vulkan/VulkanBackend.h
 		src/Window.cpp
 		src/Window.h
 		src/Config.h
 		src/CPUResourceManager.cpp
 		src/CPUResourceManager.h
-		src/Renderer.cpp
-		src/Renderer.h)
+		src/Renderer/Renderer.cpp
+		src/Renderer/Renderer.h
+		src/Renderer/Vulkan/VulkanDebug.cpp
+		src/Renderer/Vulkan/VulkanDebug.h)
 
 find_package(Vulkan REQUIRED)
 
