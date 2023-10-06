@@ -3,10 +3,10 @@
 
 
 HelloTriangleApplication::HelloTriangleApplication() :
+    m_cpuResourceManager("assets/test.gltf"),
     m_window(800, 600),
-    m_graphicsBackend(m_window.getRequiredVulkanExtensions())
+    m_renderer(m_window, m_cpuResourceManager)
 {
-
 }
 
 void HelloTriangleApplication::run()

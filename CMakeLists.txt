@@ -17,7 +17,11 @@ add_executable(VulkanTutorial src/main.cpp
 		src/VulkanBackend.h
 		src/Window.cpp
 		src/Window.h
-		src/Config.h)
+		src/Config.h
+		src/CPUResourceManager.cpp
+		src/CPUResourceManager.h
+		src/Renderer.cpp
+		src/Renderer.h)
 
 find_package(Vulkan REQUIRED)
 

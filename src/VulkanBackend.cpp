@@ -35,6 +35,7 @@ VulkanBackend::~VulkanBackend()
             func(m_instance, m_debugMessenger, nullptr);
         }
     }
+    vkDestroyInstance(m_instance, nullptr);
 }
 
 void VulkanBackend::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)

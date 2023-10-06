@@ -1,8 +1,9 @@
 #ifndef VULKANPROJECT_HELLOTRIANGLEAPPLICATION_H
 #define VULKANPROJECT_HELLOTRIANGLEAPPLICATION_H
 
-#include "VulkanBackend.h"
 #include "Window.h"
+#include "CPUResourceManager.h"
+#include "Renderer.h"
 
 #include <cstdlib>
 #include <cstring>
@@ -22,8 +23,9 @@ public:
 private:
     void mainLoop();
 
+    CPUResourceManager m_cpuResourceManager;
     Window m_window;
-    VulkanBackend m_graphicsBackend;
+    Renderer m_renderer;
 };
 
 #endif // VULKANPROJECT_HELLOTRIANGLEAPPLICATION_H

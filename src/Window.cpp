@@ -19,7 +19,6 @@ Window::~Window()
     glfwTerminate();
 }
 
-
 bool Window::update()
 {
     if (glfwWindowShouldClose(m_window))
@@ -30,7 +29,7 @@ bool Window::update()
     return true;
 }
 
-std::vector<const char*> Window::getRequiredVulkanExtensions()
+std::vector<const char*> Window::getRequiredVulkanExtensions() const
 {
     uint32_t glfwExtensionCount = 0;
     const char** glfwExtensions;
