@@ -6,11 +6,15 @@
 #include <optional>
 #include <vector>
 
+struct QueueFamilyIndices {
+    std::optional<uint32_t> graphicsAndComputeFamily;
+    std::optional<uint32_t> presentFamily;
+};
 
-VkPhysicalDevice selectPhysicalDevice(VkInstance& instance);
-bool isPhysicalDeviceSuitable(VkPhysicalDevice device);
-std::optional<uint32_t> findSuitableQueueFamily(VkPhysicalDevice device);
-VkDevice createLogicalDevice(VkPhysicalDevice& physicalDevice, uint32_t suitableQueueFamilyIndex, const std::vector<const char*>& validationLayers);
+VkPhysicalDevice selectPhysicalDevice(VkInstance instance, VkSurfaceKHR surface);
+bool isPhysicalDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface);
+QueueFamilyIndices findSuitableQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surface);
+VkDevice createLogicalDevice(VkPhysicalDevice& physicalDevice, const QueueFamilyIndices& suitableQueueFamilyIndices, const std::vector<const char*>& validationLayers);
 VkPhysicalDeviceFeatures getNeededPhysicalDeviceFeatures();
 
 

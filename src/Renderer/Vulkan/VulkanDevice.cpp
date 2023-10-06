@@ -1,7 +1,9 @@
 #include "VulkanDevice.h"
 
+#include <set>
 
-bool isPhysicalDeviceSuitable(VkPhysicalDevice device)
+
+bool isPhysicalDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
     VkPhysicalDeviceProperties deviceProperties;
     vkGetPhysicalDeviceProperties(device, &deviceProperties);
@@ -9,9 +11,10 @@ bool isPhysicalDeviceSuitable(VkPhysicalDevice device)
     VkPhysicalDeviceFeatures deviceFeatures;
     vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
-    const std::optional<uint32_t> suitableFamilyIndex = findSuitableQueueFamily(device);
+    bool deviceIsSuitable = VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
 
-    bool deviceIsSuitable = VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && suitableFamilyIndex.has_value();
+    const QueueFamilyIndices familyIndices = findSuitableQueueFamilies(device, surface);
+    deviceIsSuitable |= familyIndices.graphicsAndComputeFamily.has_value() && familyIndices.presentFamily.has_value();
 
     VkPhysicalDeviceFeatures neededFeatures = getNeededPhysicalDeviceFeatures();
 
@@ -27,7 +30,7 @@ bool isPhysicalDeviceSuitable(VkPhysicalDevice device)
     return deviceIsSuitable;
 };
 
-VkPhysicalDevice selectPhysicalDevice(VkInstance& instance)
+VkPhysicalDevice selectPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)
 {
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
@@ -41,7 +44,7 @@ VkPhysicalDevice selectPhysicalDevice(VkInstance& instance)
     vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
     for (const auto& device : devices) {
-        if (isPhysicalDeviceSuitable(device))
+        if (isPhysicalDeviceSuitable(device, surface))
         {
             return device;
         }
@@ -49,9 +52,9 @@ VkPhysicalDevice selectPhysicalDevice(VkInstance& instance)
     throw std::runtime_error("failed to find a suitable GPU with Vulkan support!");
 }
 
-std::optional<uint32_t> findSuitableQueueFamily(VkPhysicalDevice device)
+QueueFamilyIndices findSuitableQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
-    std::optional<uint32_t> suitableFamilyIndex;
+    QueueFamilyIndices indices{};
 
     uint32_t queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
@@ -62,30 +65,57 @@ std::optional<uint32_t> findSuitableQueueFamily(VkPhysicalDevice device)
     for (size_t i = 0; i < queueFamilies.size(); ++i)
     {
         const auto& queueFamily = queueFamilies[i];
-        if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT && queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT) {
-            suitableFamilyIndex = i;
-            return suitableFamilyIndex;
+
+        const bool supportGraphicsAndCompute = queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT && queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT;
+
+        if (supportGraphicsAndCompute) {
+            indices.graphicsAndComputeFamily = i;
+        }
+
+        VkBool32 presentSupport = false;
+        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
+        if (presentSupport)
+        {
+            indices.presentFamily = i;
+        }
+
+        if (supportGraphicsAndCompute && presentSupport)
+        {
+            return indices;
         }
     }
-    return suitableFamilyIndex;
+
+    if (!indices.graphicsAndComputeFamily.has_value() || !indices.presentFamily.has_value())
+    {
+        throw std::runtime_error("failed to find suitable queue families!");
+    }
+
+    return indices;
 }
 
-VkDevice createLogicalDevice(VkPhysicalDevice& physicalDevice, uint32_t suitableQueueFamilyIndex, const std::vector<const char*>& validationLayers)
+VkDevice createLogicalDevice(VkPhysicalDevice& physicalDevice, const QueueFamilyIndices& suitableQueueFamilyIndices, const std::vector<const char*>& validationLayers)
 {
     const float queuePriority = 1.0f;
 
-    VkDeviceQueueCreateInfo queueCreateInfo{};
-    queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-    queueCreateInfo.queueFamilyIndex = suitableQueueFamilyIndex;
-    queueCreateInfo.queueCount = 1;
-    queueCreateInfo.pQueuePriorities = &queuePriority;
+    std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+
+    std::set<uint32_t> uniqueQueueFamilies = {suitableQueueFamilyIndices.graphicsAndComputeFamily.value(), suitableQueueFamilyIndices.presentFamily.value()};
+
+    for (uint32_t queueFamily : uniqueQueueFamilies) {
+        VkDeviceQueueCreateInfo queueCreateInfo{};
+        queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        queueCreateInfo.queueFamilyIndex = queueFamily;
+        queueCreateInfo.queueCount = 1;
+        queueCreateInfo.pQueuePriorities = &queuePriority;
+        queueCreateInfos.push_back(queueCreateInfo);
+    }
 
     VkPhysicalDeviceFeatures deviceFeatures = getNeededPhysicalDeviceFeatures();
 
     VkDeviceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    createInfo.pQueueCreateInfos = &queueCreateInfo;
-    createInfo.queueCreateInfoCount = 1;
+    createInfo.pQueueCreateInfos = queueCreateInfos.data();
+    createInfo.queueCreateInfoCount = queueCreateInfos.size();
     createInfo.pEnabledFeatures = &deviceFeatures;
     createInfo.enabledExtensionCount = 0;
 

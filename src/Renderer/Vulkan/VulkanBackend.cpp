@@ -16,7 +16,7 @@
 namespace Vulkan
 {
 
-VulkanBackend::VulkanBackend(bool enableDebug, std::vector<const char*> windowVulkanExtensions) :
+VulkanBackend::VulkanBackend(bool enableDebug, std::function<VkSurfaceKHR(VkInstance&)> surfaceCreationFunction, std::vector<const char*> windowVulkanExtensions) :
     m_enableDebug(enableDebug)
 {
     createInstance(windowVulkanExtensions);
@@ -26,11 +26,13 @@ VulkanBackend::VulkanBackend(bool enableDebug, std::vector<const char*> windowVu
         setupDebugMessenger(m_instance, m_debugMessenger);
     }
 
-    m_physicalDevice = selectPhysicalDevice(m_instance);
-    const uint32_t suitableQueueFamilyIndex = findSuitableQueueFamily(m_physicalDevice).value();
-    m_device = createLogicalDevice(m_physicalDevice, suitableQueueFamilyIndex, getValidationLayers());
+    m_surface = surfaceCreationFunction(m_instance);
+    m_physicalDevice = selectPhysicalDevice(m_instance, m_surface);
+    const QueueFamilyIndices queueFamilies = findSuitableQueueFamilies(m_physicalDevice, m_surface);
+    m_device = createLogicalDevice(m_physicalDevice, queueFamilies, getValidationLayers());
 
-    vkGetDeviceQueue(m_device, suitableQueueFamilyIndex, 0, &m_queue);
+    vkGetDeviceQueue(m_device, queueFamilies.graphicsAndComputeFamily.value(), 0, &m_queueGraphicsCompute);
+    vkGetDeviceQueue(m_device, queueFamilies.presentFamily.value(), 0, &m_queuePresent);
 }
 
 VulkanBackend::~VulkanBackend()
@@ -44,6 +46,7 @@ VulkanBackend::~VulkanBackend()
         }
     }
     vkDestroyDevice(m_device, nullptr);
+    vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
     vkDestroyInstance(m_instance, nullptr);
 }
 
@@ -116,5 +119,7 @@ void VulkanBackend::createInstance(const std::vector<const char*>& neededInstanc
         throw std::runtime_error("Failed to create a Vulkan physical device!");
     }
 }
+
+
 
 }

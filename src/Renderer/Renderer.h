@@ -12,7 +12,7 @@
 class Renderer
 {
 public:
-    Renderer(const Window& window, const CPUResourceManager& cpuResourceManager);
+    Renderer(Window& window, const CPUResourceManager& cpuResourceManager);
 private:
     Vulkan::VulkanBackend m_graphicsBackend;
 };

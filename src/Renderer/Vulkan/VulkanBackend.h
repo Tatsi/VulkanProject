@@ -8,7 +8,7 @@ namespace Vulkan
 class VulkanBackend
 {
 public:
-    VulkanBackend(bool enableDebug, std::vector<const char*> windowVulkanExtensions);
+    VulkanBackend(bool enableDebug, std::function<VkSurfaceKHR(VkInstance&)> surfaceCreationFunction, std::vector<const char*> windowVulkanExtensions);
     ~VulkanBackend();
 
 private:
@@ -16,9 +16,11 @@ private:
 
     bool m_enableDebug{false};
     VkInstance m_instance{VK_NULL_HANDLE};
+    VkSurfaceKHR m_surface{VK_NULL_HANDLE};
     VkPhysicalDevice m_physicalDevice{VK_NULL_HANDLE};
     VkDevice m_device{VK_NULL_HANDLE};
-    VkQueue m_queue;
+    VkQueue m_queueGraphicsCompute{VK_NULL_HANDLE};
+    VkQueue m_queuePresent{VK_NULL_HANDLE};
     VkDebugUtilsMessengerEXT m_debugMessenger{VK_NULL_HANDLE};
 };
 } // namespace Vulkan

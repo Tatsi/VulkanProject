@@ -3,6 +3,8 @@
 
 
 #include <vector>
+#include <vulkan/vulkan.h>
+
 
 struct GLFWwindow;
 
@@ -16,6 +18,7 @@ public:
 
     std::vector<const char*> getRequiredVulkanExtensions(bool enableVulkanValidationLayers) const;
 
+    VkSurfaceKHR createVulkanSurface(VkInstance& instance);
 private:
     GLFWwindow* m_window;
 };

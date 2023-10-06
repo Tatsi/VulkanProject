@@ -3,6 +3,9 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+#include <vulkan/vulkan.h>
+
+#include <stdexcept>
 
 Window::Window(size_t width, size_t height)
 {
@@ -42,4 +45,14 @@ std::vector<const char*> Window::getRequiredVulkanExtensions(bool enableVulkanVa
     }
 
     return extensions;
+}
+
+VkSurfaceKHR Window::createVulkanSurface(VkInstance& instance)
+{
+    VkSurfaceKHR surface{VK_NULL_HANDLE};
+
+    if (glfwCreateWindowSurface(instance, m_window, nullptr, &surface) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create window surface!");
+    }
+    return surface;
 }
