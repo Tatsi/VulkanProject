@@ -2,6 +2,8 @@
 #define VULKANPROJECT_VULKANBACKEND_H
 
 #include "VulkanSwapchain.h"
+#include "../Types.h"
+#include "../Handle.h"
 
 #include <glm/glm.hpp>
 #include <vulkan/vulkan.h>
@@ -18,6 +20,8 @@ public:
     ~VulkanBackend();
 
     void createGraphicsPipeline(const std::vector<uint32_t>& vertexShaderSpirV, const std::vector<uint32_t>& fragmentShaderSpirV);
+    std::vector<Handle<HandleType::Framebuffer>> createFramebuffers();
+
 
 private:
     void createInstance(const std::vector<const char*>& neededInstanceExtensions);
@@ -35,6 +39,7 @@ private:
     VkRenderPass m_renderPass{VK_NULL_HANDLE};
     VkPipelineLayout m_pipelineLayout{VK_NULL_HANDLE};
     VkPipeline m_pipeline;
+    HandleStorage<HandleType::Framebuffer, VkFramebuffer> m_framebuffers;
     VkDebugUtilsMessengerEXT m_debugMessenger{VK_NULL_HANDLE};
 };
 } // namespace Vulkan

@@ -25,4 +25,5 @@ void Renderer::createRenderPipeline(std::string_view vertexShaderPath, std::stri
     const Shader fragmentShader = shaderCompiler.compileShader("fragmentShader", "shaders/shader.frag", EShLanguage::EShLangFragment);
 
     m_graphicsBackend.createGraphicsPipeline(vertexShader.spirvCode, fragmentShader.spirvCode);
+    m_graphicsBackend.createFramebuffers();
 }

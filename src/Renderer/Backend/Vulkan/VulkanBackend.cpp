@@ -42,6 +42,12 @@ VulkanBackend::~VulkanBackend()
 {
     vkDestroyPipeline(m_device, m_pipeline, nullptr);
     vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
+
+    const std::vector<VkFramebuffer*> aliveFramebuffers = m_framebuffers.getAliveData();
+    for (const VkFramebuffer* framebuffer : aliveFramebuffers)
+    {
+        vkDestroyFramebuffer(m_device, *framebuffer, nullptr);
+    }
     vkDestroyRenderPass(m_device, m_renderPass, nullptr);
 
     for (auto swapchainImageView : m_swapchainImageViews)
@@ -155,6 +161,36 @@ void VulkanBackend::createGraphicsPipeline(const std::vector<uint32_t>& vertexSh
 
     destroyShaderModule(m_device, vertexShaderModule);
     destroyShaderModule(m_device, fragmentShaderModule);
+}
+
+std::vector<Handle<HandleType::Framebuffer>> VulkanBackend::createFramebuffers()
+{
+    std::vector<Handle<HandleType::Framebuffer>> returnedHandles;
+    returnedHandles.reserve(m_swapchainImageViews.size());
+
+    for (size_t i = 0; i < m_swapchainImageViews.size(); i++) {
+        VkImageView attachments[] = {
+            m_swapchainImageViews[i]
+        };
+
+        VkFramebufferCreateInfo framebufferInfo{};
+        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebufferInfo.renderPass = m_renderPass;
+        framebufferInfo.attachmentCount = 1;
+        framebufferInfo.pAttachments = attachments;
+        framebufferInfo.width = m_swapchainInfo.extent.width;
+        framebufferInfo.height = m_swapchainInfo.extent.height;
+        framebufferInfo.layers = 1;
+
+        VkFramebuffer framebuffer;
+
+        if (vkCreateFramebuffer(m_device, &framebufferInfo, nullptr, &framebuffer) != VK_SUCCESS) {
+            throw std::runtime_error("Failed to create a framebuffer!");
+        }
+        Handle<HandleType::Framebuffer> handle = m_framebuffers.insertElement(framebuffer);
+        returnedHandles.push_back(handle);
+    }
+    return returnedHandles;
 }
 
 } // namespace Vulkan

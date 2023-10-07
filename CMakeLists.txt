@@ -32,22 +32,25 @@ add_executable(VulkanTutorial
 		src/Renderer/Renderer.h
 		src/Renderer/ShaderCompiler.cpp
 		src/Renderer/ShaderCompiler.h
-		src/Renderer/Vulkan/VulkanBackend.cpp
-		src/Renderer/Vulkan/VulkanBackend.h
-		src/Renderer/Vulkan/VulkanDebug.cpp
-		src/Renderer/Vulkan/VulkanDebug.h
-		src/Renderer/Vulkan/VulkanDevice.cpp
-		src/Renderer/Vulkan/VulkanDevice.h
-		src/Renderer/Vulkan/VulkanSwapchain.cpp
-		src/Renderer/Vulkan/VulkanSwapchain.h
-		src/Renderer/Vulkan/VulkanImage.cpp
-		src/Renderer/Vulkan/VulkanImage.h
-		src/Renderer/Vulkan/VulkanPipeline.cpp
-		src/Renderer/Vulkan/VulkanPipeline.h
+		src/Renderer/Backend/Vulkan/VulkanBackend.cpp
+		src/Renderer/Backend/Vulkan/VulkanBackend.h
+		src/Renderer/Backend/Vulkan/VulkanDebug.cpp
+		src/Renderer/Backend/Vulkan/VulkanDebug.h
+		src/Renderer/Backend/Vulkan/VulkanDevice.cpp
+		src/Renderer/Backend/Vulkan/VulkanDevice.h
+		src/Renderer/Backend/Vulkan/VulkanSwapchain.cpp
+		src/Renderer/Backend/Vulkan/VulkanSwapchain.h
+		src/Renderer/Backend/Vulkan/VulkanImage.cpp
+		src/Renderer/Backend/Vulkan/VulkanImage.h
+		src/Renderer/Backend/Vulkan/VulkanPipeline.cpp
+		src/Renderer/Backend/Vulkan/VulkanPipeline.h
 		src/Utilities/Filesystem.cpp
 		src/Utilities/Filesystem.h
-		src/Renderer/Vulkan/VulkanShader.cpp
-		src/Renderer/Vulkan/VulkanShader.h
+		src/Renderer/Backend/Vulkan/VulkanShader.cpp
+		src/Renderer/Backend/Vulkan/VulkanShader.h
+		src/Renderer/Backend/Types.h
+		src/Renderer/Backend/Handle.cpp
+		src/Renderer/Backend/Handle.h
 )
 
 find_package(Vulkan REQUIRED)
