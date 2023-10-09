@@ -135,17 +135,12 @@ SwapChainInfo createSwapChain(VkPhysicalDevice physicalDevice,
         throw std::runtime_error("failed to create swap chain!");
     }
 
-    return swapchain;
-}
+    uint32_t swapchainImageCount;
+    vkGetSwapchainImagesKHR(logicalDevice, swapchain.swapchain, &swapchainImageCount, nullptr);
+    swapchain.images.resize(imageCount);
+    vkGetSwapchainImagesKHR(logicalDevice, swapchain.swapchain, &swapchainImageCount, swapchain.images.data());
 
-std::vector<VkImage> getSwapchainImages(VkDevice logicalDevice, VkSwapchainKHR swapchain)
-{
-    std::vector<VkImage> swapChainImages;
-    uint32_t imageCount;
-    vkGetSwapchainImagesKHR(logicalDevice, swapchain, &imageCount, nullptr);
-    swapChainImages.resize(imageCount);
-    vkGetSwapchainImagesKHR(logicalDevice, swapchain, &imageCount, swapChainImages.data());
-    return swapChainImages;
+    return swapchain;
 }
 
 } // namespace Vulkan
